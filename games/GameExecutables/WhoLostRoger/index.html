@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>WhoLostRoger</title>
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                box-sizing: border-box;
+                background: rgba(255,255,255,1);
+                background: #fff;
+            }
+
+            .webgl-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                border: 0;
+                transform: translate(-50%, -50%);
+                -webkit-transform: translate(-50%, -50%);
+            }
+
+            .webgl-content .onfullscreen {
+                position: fixed;
+                top: 0;
+                left: 60px;
+                background: transparent center no-repeat;
+                background-image: url('./TemplateData/fullscreen.png');
+                width: 38px;
+                height: 38px;
+                cursor: pointer;
+            }
+
+            a.back-button {
+                text-decoration: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 100;
+                padding: 5px 10px;
+                background: rgba(255, 255, 255, 1.0);
+                background-image: url('./TemplateData/goback.png');
+                box-sizing: border-box;
+                text-align: center;
+                width: 60px;
+                height: 38px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="webgl-content">
+            <canvas id="unity-canvas"></canvas>
+            <a class="back-button" href="#" onclick="goBack()">BACK</a>
+            <div class="onfullscreen"></div>
+        </div>
+
+        <script src="Build/WhoLostRoger_v2020_0.5.loader.js"></script>
+        <script type="application/javascript">
+            createUnityInstance(document.querySelector("#unity-canvas"), {
+                dataUrl: "Build/WhoLostRoger_v2020_0.5.data",
+                frameworkUrl: "Build/WhoLostRoger_v2020_0.5.framework.js",
+                codeUrl: "Build/WhoLostRoger_v2020_0.5.wasm",
+                streamingAssetsUrl: "StreamingAssets",
+                companyName: "Cats",
+                productName: "WhoLostRoger",
+                productVersion: "0.2.1",
+            }).then(function (instance) {
+                var canvas = instance.Module.canvas;
+                var container = canvas.parentElement;
+                var fullscreenButton = document.querySelector(".onfullscreen");
+
+                function onResize() {
+                    var width;
+                    var height;
+                    var ratio;
+
+                    if (scaleToFit) {
+                        width = window.innerWidth;
+                        height = window.innerHeight;
+                        ratio = 1280 / 800;
+
+                        if (height * ratio > width) {
+                            height = Math.min(height, Math.ceil(width / ratio));
+                        }
+                        width = Math.floor(height * ratio);
+
+                    } else {
+                        width = 1280;
+                        height = 800;
+                    }
+
+                    container.style.width = canvas.style.width = width + "px";
+                    container.style.height = canvas.style.height = height + "px";
+                }
+
+                var scaleToFit;
+                try {
+                    scaleToFit = !!JSON.parse("");
+                } catch (e) {
+                    scaleToFit = true;
+                }
+
+                window.addEventListener('resize', onResize);
+                onResize();
+
+                fullscreenButton.onclick = () => {
+                    instance.SetFullscreen(1);
+                };
+            });
+
+            function goBack() {
+                window.history.back();
+            }
+        </script>
+    </body>
+</html>
